@@ -1,5 +1,6 @@
 package com.cadence.model
 
+import com.cadence.framework.Logging
 import org.joda.time.{LocalDate, DateTime}
 
 import scala.slick.direct.AnnotationMapper.column
@@ -8,7 +9,7 @@ import scala.slick.lifted.ProvenShape
 /**
  * Created by aparrish on 7/30/14.
  */
-package object repository {
+package object repository extends Logging {
 
   import scala.slick.driver.MySQLDriver.simple._
   import com.github.tototoshi.slick.MySQLJodaSupport._
@@ -36,7 +37,6 @@ package object repository {
   object cadenceUsersExt extends TableQuery(new CadenceUserTable(_)) {
     // put extra methods here, e.g.:
     val findByID = this.findBy(_.id)
-    val findByEmail = this.findBy(_.email)
   }
 
 
@@ -108,7 +108,10 @@ package object repository {
 
   def findByEmail( email : String ) : Option[CadenceUser] = {
     db.withSession{
-      implicit s => cadenceUsersExt.findByEmail(email).firstOption()
+      implicit s =>
+        val q = cadenceUsers.filter( _.email === email )
+        debug("This is the debug statement: " + q.selectStatement)
+        q.firstOption
     }
   }
 

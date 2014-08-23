@@ -26,8 +26,6 @@ libraryDependencies += "com.typesafe.akka" %% "akka-actor" % akkaVersion
 
 libraryDependencies += "com.typesafe.slick" %% "slick" % "2.0.0"
 
-libraryDependencies += "org.slf4j" % "slf4j-nop" % "1.6.4"
-
 libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.22"
 
 libraryDependencies += "com.jolbox" % "bonecp" % "0.7.1.RELEASE"
@@ -45,6 +43,12 @@ libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "te
 libraryDependencies += "org.specs2" %% "specs2" % "2.3.13" % "test"
 
 libraryDependencies += "com.wandoulabs.akka" %% "spray-websocket" % "0.1.2-RC1"
+
+libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.0.13"
+
+libraryDependencies += "ch.qos.logback" % "logback-core" % "1.0.13"
+
+libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.5"
 
 scalacOptions in Test ++= Seq("-Yrangepos")
 

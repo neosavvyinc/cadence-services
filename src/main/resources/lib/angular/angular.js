@@ -7386,7 +7386,7 @@ function headersGetter(headers) {
  *
  * This function is used for both request and response transforming
  *
- * @param {*} data Data to transform.
+ * @param {*} data com.cadence.Data to transform.
  * @param {function(string=)} headers Http headers getter fn.
  * @param {(Function|Array.<Function>)} fns Function or an array of functions.
  * @returns {*} Transformed data.
@@ -7643,7 +7643,7 @@ function $HttpProvider() {
      * Both requests and responses can be transformed using transform functions. By default, Angular
      * applies these transformations:
      *
-     * Request transformations:
+     * com.cadence.Request transformations:
      *
      * - If the `data` property of the request configuration object contains an object, serialize it
      *   into JSON format.
@@ -7853,7 +7853,7 @@ function $HttpProvider() {
      * Angular will strip the prefix, before processing the JSON.
      *
      *
-     * ## Cross Site Request Forgery (XSRF) Protection
+     * ## Cross Site com.cadence.Request Forgery (XSRF) Protection
      *
      * [XSRF](http://en.wikipedia.org/wiki/Cross-site_request_forgery) is a technique by which
      * an unauthorized site can gain your user's private data. Angular provides a mechanism
@@ -7885,7 +7885,7 @@ function $HttpProvider() {
      *    - **params** – `{Object.<string|Object>}` – Map of strings or objects which will be turned
      *      to `?key1=value1&key2=value2` after the url. If the value is not a string, it will be
      *      JSONified.
-     *    - **data** – `{string|Object}` – Data to be sent as the request message data.
+     *    - **data** – `{string|Object}` – com.cadence.Data to be sent as the request message data.
      *    - **headers** – `{Object}` – Map of strings or functions which return strings representing
      *      HTTP headers to send to the server. If the return value of a function is null, the
      *      header will not be sent.
@@ -7971,7 +7971,7 @@ function $HttpProvider() {
               $scope.data = data;
             }).
             error(function(data, status) {
-              $scope.data = data || "Request failed";
+              $scope.data = data || "com.cadence.Request failed";
               $scope.status = status;
           });
         };
@@ -8012,7 +8012,7 @@ function $HttpProvider() {
     invalidJsonpBtn.click();
     fetchBtn.click();
     expect(status.getText()).toMatch('0');
-    expect(data.getText()).toMatch('Request failed');
+    expect(data.getText()).toMatch('com.cadence.Request failed');
   });
 </file>
 </example>
@@ -8198,7 +8198,7 @@ function $HttpProvider() {
      * Shortcut method to perform `POST` request.
      *
      * @param {string} url Relative or absolute URL specifying the destination of the request
-     * @param {*} data Request content
+     * @param {*} data com.cadence.Request content
      * @param {Object=} config Optional configuration object
      * @returns {HttpPromise} Future object
      */
@@ -8211,7 +8211,7 @@ function $HttpProvider() {
      * Shortcut method to perform `PUT` request.
      *
      * @param {string} url Relative or absolute URL specifying the destination of the request
-     * @param {*} data Request content
+     * @param {*} data com.cadence.Request content
      * @param {Object=} config Optional configuration object
      * @returns {HttpPromise} Future object
      */
@@ -13634,7 +13634,7 @@ function $SceDelegateProvider() {
  * <file name="index.html">
  *   <div ng-controller="myAppController as myCtrl">
  *     <i ng-bind-html="myCtrl.explicitlyTrustedHtml" id="explicitlyTrustedHtml"></i><br><br>
- *     <b>User comments</b><br>
+ *     <b>com.cadence.User comments</b><br>
  *     By default, HTML that isn't explicitly trusted (e.g. Alice's comment) is sanitized when
  *     $sanitize is available.  If $sanitize isn't available, this results in an error instead of an
  *     exploit.
@@ -17267,7 +17267,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
        </script>
        <div ng-controller="ExampleController">
          <form name="myForm">
-           User name: <input type="text" name="userName" ng-model="user.name" required>
+           com.cadence.User name: <input type="text" name="userName" ng-model="user.name" required>
            <span class="error" ng-show="myForm.userName.$error.required">
              Required!</span><br>
            Last name: <input type="text" name="lastName" ng-model="user.last"

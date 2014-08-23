@@ -2164,7 +2164,7 @@ nv.models.bulletChart = function() {
         return '<h3>' + x + '</h3>' +
                '<p>' + y + '</p>'
       }
-    , noData = 'No Data Available.'
+    , noData = 'No com.cadence.Data Available.'
     , dispatch = d3.dispatch('tooltipShow', 'tooltipHide')
     ;
 
@@ -2200,7 +2200,7 @@ nv.models.bulletChart = function() {
       chart.container = this;
 
       //------------------------------------------------------------
-      // Display No Data message if there's nothing to show.
+      // Display No com.cadence.Data message if there's nothing to show.
 
       if (!d || !ranges.call(this, d, i)) {
         var noDataText = container.selectAll('.nv-noData').data([noData]);
@@ -2516,7 +2516,7 @@ nv.models.cumulativeLineChart = function() {
     , id = lines.id()
     , state = { index: 0, rescaleY: rescaleY }
     , defaultState = null
-    , noData = 'No Data Available.'
+    , noData = 'No com.cadence.Data Available.'
     , average = function(d) { return d.average }
     , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'stateChange', 'changeState')
     , transitionDuration = 250
@@ -2609,7 +2609,7 @@ nv.models.cumulativeLineChart = function() {
       }
 
       //------------------------------------------------------------
-      // Display No Data message if there's nothing to show.
+      // Display No com.cadence.Data message if there's nothing to show.
 
       if (!data || !data.length || !data.filter(function(d) { return d.values.length }).length) {
         var noDataText = container.selectAll('.nv-noData').data([noData]);
@@ -3624,7 +3624,7 @@ nv.models.discreteBarChart = function() {
       }
     , x
     , y
-    , noData = "No Data Available."
+    , noData = "No com.cadence.Data Available."
     , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'beforeUpdate')
     , transitionDuration = 250
     ;
@@ -3679,7 +3679,7 @@ nv.models.discreteBarChart = function() {
 
 
       //------------------------------------------------------------
-      // Display No Data message if there's nothing to show.
+      // Display No com.cadence.Data message if there's nothing to show.
 
       if (!data || !data.length || !data.filter(function(d) { return d.values.length }).length) {
         var noDataText = container.selectAll('.nv-noData').data([noData]);
@@ -4120,7 +4120,7 @@ nv.models.historicalBarChart = function() {
     , y
     , state = {}
     , defaultState = null
-    , noData = 'No Data Available.'
+    , noData = 'No com.cadence.Data Available.'
     , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'stateChange', 'changeState')
     , transitionDuration = 250
     ;
@@ -4521,7 +4521,7 @@ nv.models.indentedTree = function() {
     , id = Math.floor(Math.random() * 10000)
     , header = true
     , filterZero = false
-    , noData = "No Data Available."
+    , noData = "No com.cadence.Data Available."
     , childIndent = 20
     , columns = [{key:'key', label: 'Name', type:'text'}] //TODO: consider functions like chart.addColumn, chart.removeColumn, instead of a block like this
     , tableClass = null
@@ -4548,7 +4548,7 @@ nv.models.indentedTree = function() {
 
 
       //------------------------------------------------------------
-      // Display No Data message if there's nothing to show.
+      // Display No com.cadence.Data message if there's nothing to show.
       if (!data[0]) data[0] = {key: noData};
 
       //------------------------------------------------------------
@@ -5200,7 +5200,7 @@ nv.models.line = function() {
         .height(availableHeight)
 
       var scatterWrap = wrap.select('.nv-scatterWrap');
-          //.datum(data); // Data automatically trickles down from the wrap
+          //.datum(data); // com.cadence.Data automatically trickles down from the wrap
 
       scatterWrap.transition().call(scatter);
 
@@ -5422,7 +5422,7 @@ nv.models.lineChart = function() {
     , y
     , state = {}
     , defaultState = null
-    , noData = 'No Data Available.'
+    , noData = 'No com.cadence.Data Available.'
     , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'stateChange', 'changeState')
     , transitionDuration = 250
     ;
@@ -5889,7 +5889,7 @@ nv.models.linePlusBarChart = function() {
     , y2
     , state = {}
     , defaultState = null
-    , noData = "No Data Available."
+    , noData = "No com.cadence.Data Available."
     , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'stateChange', 'changeState')
     ;
 
@@ -5962,7 +5962,7 @@ nv.models.linePlusBarChart = function() {
       }
 
       //------------------------------------------------------------
-      // Display No Data message if there's nothing to show.
+      // Display No com.cadence.Data message if there's nothing to show.
 
       if (!data || !data.length || !data.filter(function(d) { return d.values.length }).length) {
         var noDataText = container.selectAll('.nv-noData').data([noData]);
@@ -6323,7 +6323,7 @@ nv.models.lineWithFocusChart = function() {
         return '<h3>' + key + '</h3>' +
                '<p>' +  y + ' at ' + x + '</p>'
       }
-    , noData = "No Data Available."
+    , noData = "No com.cadence.Data Available."
     , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'brush')
     , transitionDuration = 250
     ;
@@ -6384,7 +6384,7 @@ nv.models.lineWithFocusChart = function() {
 
 
       //------------------------------------------------------------
-      // Display No Data message if there's nothing to show.
+      // Display No com.cadence.Data message if there's nothing to show.
 
       if (!data || !data.length || !data.filter(function(d) { return d.values.length }).length) {
         var noDataText = container.selectAll('.nv-noData').data([noData]);
@@ -6907,7 +6907,7 @@ nv.models.linePlusBarWithFocusChart = function() {
     , y2
     , y3
     , y4
-    , noData = "No Data Available."
+    , noData = "No com.cadence.Data Available."
     , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'brush')
     , transitionDuration = 0
     ;
@@ -6979,7 +6979,7 @@ nv.models.linePlusBarWithFocusChart = function() {
 
 
       //------------------------------------------------------------
-      // Display No Data message if there's nothing to show.
+      // Display No com.cadence.Data message if there's nothing to show.
 
       if (!data || !data.length || !data.filter(function(d) { return d.values.length }).length) {
         var noDataText = container.selectAll('.nv-noData').data([noData]);
@@ -8018,7 +8018,7 @@ nv.models.multiBarChart = function() {
     , y //can be accessed via chart.yScale()
     , state = { stacked: false }
     , defaultState = null
-    , noData = "No Data Available."
+    , noData = "No com.cadence.Data Available."
     , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'stateChange', 'changeState')
     , controlWidth = function() { return showControls ? 180 : 0 }
     , transitionDuration = 250
@@ -8986,7 +8986,7 @@ nv.models.multiBarHorizontalChart = function() {
     , y //can be accessed via chart.yScale()
     , state = { stacked: stacked }
     , defaultState = null
-    , noData = 'No Data Available.'
+    , noData = 'No com.cadence.Data Available.'
     , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'stateChange', 'changeState')
     , controlWidth = function() { return showControls ? 180 : 0 }
     , transitionDuration = 250
@@ -9056,7 +9056,7 @@ nv.models.multiBarHorizontalChart = function() {
       }
 
       //------------------------------------------------------------
-      // Display No Data message if there's nothing to show.
+      // Display No com.cadence.Data message if there's nothing to show.
 
       if (!data || !data.length || !data.filter(function(d) { return d.values.length }).length) {
         var noDataText = container.selectAll('.nv-noData').data([noData]);
@@ -10678,7 +10678,7 @@ nv.models.pieChart = function() {
       }
     , state = {}
     , defaultState = null
-    , noData = "No Data Available."
+    , noData = "No com.cadence.Data Available."
     , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'stateChange', 'changeState')
     ;
 
@@ -10730,7 +10730,7 @@ nv.models.pieChart = function() {
       }
 
       //------------------------------------------------------------
-      // Display No Data message if there's nothing to show.
+      // Display No com.cadence.Data message if there's nothing to show.
 
       if (!data || !data.length) {
         var noDataText = container.selectAll('.nv-noData').data([noData]);
@@ -11661,7 +11661,7 @@ nv.models.scatterChart = function() {
     , state = {}
     , defaultState = null
     , dispatch     = d3.dispatch('tooltipShow', 'tooltipHide', 'stateChange', 'changeState')
-    , noData       = "No Data Available."
+    , noData       = "No com.cadence.Data Available."
     , transitionDuration = 250
     ;
 
@@ -12289,7 +12289,7 @@ nv.models.scatterPlusLineChart = function() {
     , state = {}
     , defaultState = null
     , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'stateChange', 'changeState')
-    , noData       = "No Data Available."
+    , noData       = "No com.cadence.Data Available."
     , transitionDuration = 250
     ;
 
@@ -13085,7 +13085,7 @@ nv.models.sparklinePlus = function() {
     , showValue = true
     , alignValue = true
     , rightAlignValue = false
-    , noData = "No Data Available."
+    , noData = "No com.cadence.Data Available."
     ;
 
   //============================================================
@@ -13107,7 +13107,7 @@ nv.models.sparklinePlus = function() {
 
 
       //------------------------------------------------------------
-      // Display No Data message if there's nothing to show.
+      // Display No com.cadence.Data message if there's nothing to show.
 
       if (!data || !data.length) {
         var noDataText = container.selectAll('.nv-noData').data([noData]);
@@ -13762,7 +13762,7 @@ nv.models.stackedAreaChart = function() {
     , yAxisTickFormat = d3.format(',.2f')
     , state = { style: stacked.style() }
     , defaultState = null
-    , noData = 'No Data Available.'
+    , noData = 'No com.cadence.Data Available.'
     , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'stateChange', 'changeState')
     , controlWidth = 250
     , cData = ['Stacked','Stream','Expanded']
@@ -13827,7 +13827,7 @@ nv.models.stackedAreaChart = function() {
       }
 
       //------------------------------------------------------------
-      // Display No Data message if there's nothing to show.
+      // Display No com.cadence.Data message if there's nothing to show.
 
       if (!data || !data.length || !data.filter(function(d) { return d.values.length }).length) {
         var noDataText = container.selectAll('.nv-noData').data([noData]);

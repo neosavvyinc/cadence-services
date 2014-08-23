@@ -1,3 +1,5 @@
+package com.cadence
+
 /*
  * Copyright 2014 Elastic Modules Team
  *
@@ -15,8 +17,9 @@
  */
 
 
-import javax.net.ssl.{TrustManagerFactory, KeyManagerFactory, SSLContext}
-import java.security.{SecureRandom, KeyStore}
+import java.security.{KeyStore, SecureRandom}
+import javax.net.ssl.{KeyManagerFactory, SSLContext, TrustManagerFactory}
+
 import spray.io.ServerSSLEngineProvider
 
 trait MySslConfiguration {

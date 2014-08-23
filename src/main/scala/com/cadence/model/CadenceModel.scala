@@ -1,5 +1,6 @@
 package com.cadence.model
 
+import com.cadence.RequestJsonProtocol
 import org.joda.time.format.{ISODateTimeFormat, DateTimeFormat}
 import org.joda.time.{DateTimeZone, DateTime, LocalDate}
 import spray.json._
@@ -8,9 +9,9 @@ import spray.json._
  * Created by aparrish on 7/29/14.
  */
 case class CadenceUser(id: Option[Int],
-                       email : String,
                        firstName : String,
                        lastName : String,
+                       email : String,
                        company : String,
                        password : String)
 

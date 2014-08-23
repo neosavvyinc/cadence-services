@@ -1281,7 +1281,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 			return 0;
 		}
 
-		// Sort on method existence if only one input has compareDocumentPosition
+		// com.cadence.Sort on method existence if only one input has compareDocumentPosition
 		var compare = !a.compareDocumentPosition - !b.compareDocumentPosition;
 		if ( compare ) {
 			return compare;
@@ -2518,7 +2518,7 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 
 // One-time assignments
 
-// Sort stability
+// com.cadence.Sort stability
 support.sortStable = expando.split("").sort( sortOrder ).join("") === expando;
 
 // Support: Chrome<14
@@ -7845,7 +7845,7 @@ jQuery.extend({
 			json: "responseJSON"
 		},
 
-		// Data converters
+		// com.cadence.Data converters
 		// Keys separate source (or catchall "*") and destination types with a single space
 		converters: {
 

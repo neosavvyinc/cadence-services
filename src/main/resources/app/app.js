@@ -36,10 +36,10 @@ app.controller('CadenceAppController', [
                     data: $scope.emailAddress
                     }
                 ).then(function(data) {
-                        console.log("User updated")
+                        console.log("com.cadence.User updated")
 //                        $scope.loadUsers()
                     }, function(error){
-                        console.log("User not updated...")
+                        console.log("com.cadence.User not updated...")
                     })
             }
 

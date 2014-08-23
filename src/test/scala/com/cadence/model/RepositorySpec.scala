@@ -12,6 +12,17 @@ class RepositorySpec extends Specification {
 
   sequential
 
+  def basicUsers() = {
+    val a = CadenceUser(None, "adam", "parrish", "aparrish@neosavvy.com", "neosavvy", "A")
+    val t = CadenceUser(None, "trevor", "ewen", "trevor@neosavvy.com", "neosavvy", "B")
+    val c = CadenceUser(None, "chris", "caplinger", "chris@neosavvy.com","neosavvy", "C")
+
+    val aId = addUser(a)
+    val tId = addUser(t)
+    val cId = addUser(c)
+    (aId,tId,cId)
+  }
+
   "The insert and list of users" should {
 
     "drop everything first" in {
@@ -20,7 +31,7 @@ class RepositorySpec extends Specification {
     }
 
     "support inserting" in {
-      val c = CadenceUser(None, "aparrish@neosavvy.com", "adam", "parrish", "neosavvy")
+      val c = CadenceUser(None, "adam", "parrish", "aparrish@neosavvy.com", "neosavvy", "a")
       val r = addUser(c)
 
       r must be greaterThan(0)
@@ -42,16 +53,7 @@ class RepositorySpec extends Specification {
 
     "support finding one user by id" in {
       dropAll();
-      val a = CadenceUser(None, "aparrish@neosavvy.com", "adam", "parrish", "neosavvy")
-      val t = CadenceUser(None, "trevor@neosavvy.com", "trevor", "ewen", "neosavvy")
-      val c = CadenceUser(None, "chris@neosavvy.com", "chris", "caplinger", "neosavvy")
-
-      val aId = addUser(a)
-      println("Adams's ID: " + aId)
-      val tId = addUser(t)
-      println("Trevor's ID: " + tId)
-      val cId = addUser(c)
-      println("Chris's ID: " + cId)
+      val (aId,tId,cId) = basicUsers();
 
       val adam = findById(aId)
       val trevor = findById(tId)
@@ -59,6 +61,15 @@ class RepositorySpec extends Specification {
 
       (adam.get.firstName must be equalTo "adam")
       (adam.get.lastName must be equalTo "parrish")
+    }
+
+    "support finding one user by email " in {
+      dropAll();
+      val (aId,tId,cId) = basicUsers();
+
+      val r = findByEmail("aparrish@neosavvy.com");
+
+      r.get.id must be equalTo Some(aId)
     }
   }
 
