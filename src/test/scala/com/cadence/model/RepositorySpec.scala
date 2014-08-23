@@ -73,4 +73,37 @@ class RepositorySpec extends Specification {
     }
   }
 
+  "We should support adding in Applications" in {
+
+    "should support adding apps" in {
+      dropAll();
+      val (a, _, _) = basicUsers();
+
+      val app = addApplication(Application(None, "AdamsApp", "Media", "neosavvy.com", "apiKey", "appType"))
+
+      val list = listApplications()
+
+      list.length must be equalTo 1
+    }
+
+    "should support associating an app with your user" in {
+      dropAll();
+      val (aId, bId, _) = basicUsers();
+      val appId = addApplication(Application(None, "AdamsApp", "Media", "neosavvy.com", "apiKey", "appType"))
+      val appId1 = addApplication(Application(None, "AdamsApp1", "Media", "neosavvy.com", "apiKey", "appType"))
+      val appId2 = addApplication(Application(None, "AdamsApp2", "Media", "neosavvy.com", "apiKey", "appType"))
+
+      addApplicationOwner(ApplicationOwner(None, aId, appId))
+      addApplicationOwner(ApplicationOwner(None, aId, appId1))
+      addApplicationOwner(ApplicationOwner(None, bId, appId2))
+
+      val results = findApplicationsForOwner(aId)
+      val results1 = findApplicationsForOwner(bId)
+      results.length must be equalTo 2
+      results1.length must be equalTo 1
+    }
+
+
+  }
+
 }

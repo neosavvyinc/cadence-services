@@ -33,16 +33,6 @@ package object repository extends Logging {
     user = DBConfiguration.user,
     password = DBConfiguration.pass)
 
-  val cadenceUsers = TableQuery[CadenceUserTable]
-  object cadenceUsersExt extends TableQuery(new CadenceUserTable(_)) {
-    // put extra methods here, e.g.:
-    val findByID = this.findBy(_.id)
-  }
-
-
-  val checkins = TableQuery[CheckinTable]
-
-
   /**
    * USERS
    *
@@ -66,12 +56,21 @@ package object repository extends Logging {
 
     def * = (id.?, firstName, lastName, email, company, password) <> (CadenceUser.tupled, CadenceUser.unapply)
   }
+  val cadenceUsers = TableQuery[CadenceUserTable]
+  object cadenceUsersExt extends TableQuery(new CadenceUserTable(_)) {
+    // put extra methods here, e.g.:
+    val findByID = this.findBy(_.id)
+  }
+
 
 
   def dropAll() : Int = {
 
     db.withSession{
-      implicit s => cadenceUsers.delete
+      implicit s =>
+        cadenceUsers.delete
+        applications.delete
+        applicationOwners.delete
     }
 
   }
@@ -125,6 +124,27 @@ package object repository extends Logging {
    * | APP_ID   | bigint(20) | NO   |     | NULL    |                |
    * +----------+------------+------+-----+---------+----------------+
    */
+  class ApplicationOwnerTable(tag: Tag) extends Table[ApplicationOwner](tag, "APP_OWNERS") {
+    def id: Column[Int] = column[Int]("ID", O.PrimaryKey, O.AutoInc)
+    def ownerId : Column[Int] = column[Int]("OWNER_ID")
+    def applicationId : Column[Int] = column[Int]("APP_ID")
+
+    def * = (id.?, ownerId, applicationId) <> (ApplicationOwner.tupled, ApplicationOwner.unapply)
+  }
+//  val applicationOwners = TableQuery[ApplicationOwnerTable]
+  object applicationOwners extends TableQuery(new ApplicationOwnerTable(_)) {
+    // put extra methods here, e.g.:
+    val findByOwnerId = this.findBy(_.ownerId)
+  }
+
+  def addApplicationOwner( applicationOwner : ApplicationOwner ) : Int = {
+    db.withSession{
+      implicit session => (applicationOwners returning applicationOwners.map(_.id)) += applicationOwner
+    }
+  }
+
+
+
 
   /**
    * APPS
@@ -139,6 +159,47 @@ package object repository extends Logging {
    * | TYPE    | varchar(256)  | NO   |     | NULL    |                |
    * +---------+---------------+------+-----+---------+----------------+
    */
+  class ApplicationTable(tag : Tag) extends Table[Application](tag, "APPS") {
+    def id: Column[Int] = column[Int]("ID", O.PrimaryKey, O.AutoInc)
+    def name : Column[String] = column[String]("NAME")
+    def market : Column[String] = column[String]("MARKET")
+    def url: Column[String] = column[String]("URL")
+    def apiKey: Column[String] = column[String]("API_KEY")
+    def appType: Column[String] = column[String]("TYPE")
+
+    def * = (id.?, name, market, url, apiKey, appType ) <> (Application.tupled, Application.unapply)
+  }
+  object applications extends TableQuery(new ApplicationTable(_)) {
+    val findById = this.findBy(_.id)
+  }
+
+  def findApplicationsForOwner( ownerId : Int ) : List[Application] = {
+
+    db.withSession {
+      implicit session =>
+        val applicationReferences = applicationOwners.findByOwnerId(ownerId).list
+        val results = applicationReferences map {
+          ar => applications.findById(ar.applicationId).first
+        }
+
+        results
+    }
+
+  }
+
+  def addApplication( application : Application ) : Int = {
+    db.withSession{
+      implicit session => (applications returning applications.map(_.id)) += application
+    }
+  }
+
+  def listApplications( ) : List[Application] = {
+
+    db.withSession{
+      implicit s => applications.list
+    }
+
+  }
 
   /**
    * SESSIONS
@@ -154,40 +215,32 @@ package object repository extends Logging {
    */
 
 
-
-
-
-
-
-
-
-
-
-
-  class CheckinTable(tag : Tag ) extends Table[Checkin](tag, "cadence_checkin") {
-
-    import com.github.tototoshi.slick.MySQLJodaSupport._
-
-    def id    = column[Int]("id", O.PrimaryKey, O.AutoInc)
-    def uuid  = column[String]("metric_user_uuid")
-    def date  = column[DateTime]("metric_date")
-
-    def * = (id.?, uuid, date) <> (Checkin.tupled, Checkin.unapply)
-  }
-
-  def insertCheckin( checkin : Checkin ) : Int = {
-
-    db.withSession {
-      implicit session => checkins.insert( checkin )
-    }
-
-  }
-
-  def listCheckins() : List[Checkin] = {
-    db.withSession {
-      implicit session => checkins.list
-    }
-  }
+//
+//
+//  class CheckinTable(tag : Tag ) extends Table[Checkin](tag, "cadence_checkin") {
+//
+//    import com.github.tototoshi.slick.MySQLJodaSupport._
+//
+//    def id    = column[Int]("id", O.PrimaryKey, O.AutoInc)
+//    def uuid  = column[String]("metric_user_uuid")
+//    def date  = column[DateTime]("metric_date")
+//
+//    def * = (id.?, uuid, date) <> (Checkin.tupled, Checkin.unapply)
+//  }
+//
+//  def insertCheckin( checkin : Checkin ) : Int = {
+//
+//    db.withSession {
+//      implicit session => checkins.insert( checkin )
+//    }
+//
+//  }
+//
+//  def listCheckins() : List[Checkin] = {
+//    db.withSession {
+//      implicit session => checkins.list
+//    }
+//  }
 
   /**
    * Need to improve these queries to pad for empty results:
