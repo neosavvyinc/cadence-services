@@ -187,6 +187,12 @@ package object repository extends Logging {
 
   }
 
+  def findApplicationById( appId : Int ) : Option[Application] = {
+    db.withSession{
+      implicit session => applications.findById(appId).firstOption
+    }
+  }
+
   def addApplication( application : Application ) : Int = {
     db.withSession{
       implicit session => (applications returning applications.map(_.id)) += application

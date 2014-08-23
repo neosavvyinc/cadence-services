@@ -239,8 +239,8 @@ object SimpleServer extends App with MySslConfiguration with Logging {
         }
       }
 
-      pathPrefix(appsEndpointPrefix)
-        parameters('userId.as[Int]) { userId  =>
+      pathPrefix(appsEndpointPrefix) {
+        parameters('userId.as[Int]) { userId =>
           get {
             respondWithMediaType(`application/json`) {
               complete {
@@ -249,9 +249,39 @@ object SimpleServer extends App with MySslConfiguration with Logging {
             }
           }
         }
+      }
     }
 
-    val appRoutes = addApplicationToUser ~ findAllAppsForUser
+    def findOneAppById = {
+      implicit val applications2json = jsonFormat6(Application)
+
+      pathPrefix(appsEndpointPrefix / IntNumber ) { appId =>
+
+          debug(s"Finding an application by id: $appId")
+          get {
+            respondWithMediaType(`application/json`) {
+              complete {
+                findApplicationById(appId)
+              }
+            }
+          }
+
+      }
+    }
+
+    def activateDevice = {
+      pathPrefix(appsEndpointPrefix / "activate" / JavaUUID ) { deviceId =>
+        get {
+          debug("Generating an activate id for device: " + deviceId)
+
+          respondWithMediaType(`application/json`) {
+            complete( java.util.UUID.randomUUID().toString )
+          }
+        }
+      }
+    }
+
+    val appRoutes = addApplicationToUser ~ findAllAppsForUser ~ activateDevice ~ findOneAppById
 
   }
 
