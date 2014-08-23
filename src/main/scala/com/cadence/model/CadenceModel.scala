@@ -20,6 +20,8 @@ case class CadenceRegistrationRequest(email : String,
                                       company : String,
                                       password : String)
 
+case class CadenceLoginRequest( email : String, password : String )
+
 
 case class Metric( uuid : String, appid : String )
 

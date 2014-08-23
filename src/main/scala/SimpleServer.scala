@@ -179,7 +179,7 @@ object SimpleServer extends App with MySslConfiguration {
 
     def businessLogicNoUpgrade: Receive = {
       implicit val refFactory: ActorRefFactory = context
-      runRoute( cadenceRoute ~ userRoutes )
+      runRoute( userRoutes )
     }
 
     /** ****************
@@ -217,7 +217,7 @@ object SimpleServer extends App with MySslConfiguration {
       }
     }
 
-    def registerUser= {
+    def registerUser = {
       implicit val cadenceUserRegistrationRequest2json = jsonFormat5(CadenceRegistrationRequest)
 
       pathPrefix(userEndpointPrefix / "register") {
@@ -242,7 +242,37 @@ object SimpleServer extends App with MySslConfiguration {
       }
     }
 
-    val userRoutes = helloFromUser ~ registerUser
+    def loginUser = {
+      implicit val cadenceLoginRequest2json = jsonFormat2(CadenceLoginRequest)
+      implicit val cadenceUser2json = jsonFormat6(CadenceUser)
+
+      pathPrefix(userEndpointPrefix / "login" ) {
+        post {
+          entity(as[CadenceLoginRequest]) { loginRequest =>
+            respondWithMediaType(`application/json`) {
+              complete {
+                val userByEmail = findByEmail(loginRequest.email)
+                userByEmail match {
+                  case None => StatusCodes.Forbidden
+                  case Some(u) => {
+                    if( u.password == loginRequest.password ) {
+                      u
+                    }
+                    else
+                    {
+                      StatusCodes.Forbidden
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+    }
+
+    val userRoutes = helloFromUser ~ registerUser ~ loginUser
 
 
     /** *******************
@@ -250,86 +280,6 @@ object SimpleServer extends App with MySslConfiguration {
       */
 
 
-
-//    def setup = pathPrefix("setup") {
-//      post{
-//        respondWithMediaType(`application/json`)
-//        entity(as[String]) {
-//          emailAddress =>
-//            complete {
-//              def uuid = java.util.UUID.randomUUID.toString
-//              val u = CadenceUser(None, emailAddress, uuid)
-//              addUser(u)
-//
-//              import RequestJsonProtocol._
-//              val update : WsDataChange = WsDataChange()
-//              server ! ForwardFrame(TextFrame(update.asInstanceOf[Request].toJson.compactPrint))
-//
-//              u
-//            }
-//        }
-//      }
-//    }
-
-//    def showUsers = pathPrefix("listUsers") {
-//      get {
-//        respondWithMediaType(`application/json`)
-//        complete {
-//          listUsers()
-//        }
-//
-//      }
-//    }
-//
-//    def checkin = pathPrefix("checkin") {
-//      post {
-//        respondWithMediaType(`application/json`)
-//        entity(as[RawCheckin]) {
-//          checkin =>
-//            complete {
-//
-//              insertCheckin(Checkin(None, checkin.uuid))
-//
-//              import RequestJsonProtocol._
-//              val update : WsMetricsChange = WsMetricsChange()
-//              server ! ForwardFrame(TextFrame(update.asInstanceOf[Request].toJson.compactPrint))
-//
-//              StatusCodes.OK
-//            }
-//        }
-//      }
-//    }
-//
-//    def showMetrics = pathPrefix("metrics") {
-//      get {
-//        respondWithMediaType(`application/json`)
-//        complete {
-//
-//          listCheckins()
-//        }
-//
-//      }
-//    }
-
-//
-//    def graphMetrics = pathPrefix("graphMetrics") {
-//      get {
-//        respondWithMediaType(`application/json`)
-//        parameters('q) {
-//          (q) =>
-//            complete {
-//              graphCheckins(q)
-//            }
-//        }
-//      }
-//    }
-
-
-    val cadenceRoute =
-        lib ~
-        app ~
-        indexPath ~
-        indexFile
   }
 
   def responseFrame(eventName: String, user: User): TextFrame = {

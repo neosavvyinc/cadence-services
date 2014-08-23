@@ -36,6 +36,7 @@ package object repository {
   object cadenceUsersExt extends TableQuery(new CadenceUserTable(_)) {
     // put extra methods here, e.g.:
     val findByID = this.findBy(_.id)
+    val findByEmail = this.findBy(_.email)
   }
 
 
@@ -102,6 +103,12 @@ package object repository {
   def findById( id : Int ) : Option[CadenceUser] = {
     db.withSession{
       implicit s => cadenceUsersExt.findByID(id).firstOption()
+    }
+  }
+
+  def findByEmail( email : String ) : Option[CadenceUser] = {
+    db.withSession{
+      implicit s => cadenceUsersExt.findByEmail(email).firstOption()
     }
   }
 
