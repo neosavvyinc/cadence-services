@@ -83,4 +83,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="aparrish" id="3">
+        <addColumn tableName="USERS">
+            <column name="PASSWORD" type="VARCHAR(1024)">
+                <constraints nullable="false"></constraints>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

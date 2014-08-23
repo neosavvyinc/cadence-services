@@ -61,8 +61,9 @@ package object repository {
     def lastName : Column[String] = column[String]("LAST_NAME")
     def email: Column[String] = column[String]("EMAIL")
     def company: Column[String] = column[String]("COMPANY")
+    def password: Column[String] = column[String]("PASSWORD")
 
-    def * = (id.?, firstName, lastName, email, company) <> (CadenceUser.tupled, CadenceUser.unapply)
+    def * = (id.?, firstName, lastName, email, company, password) <> (CadenceUser.tupled, CadenceUser.unapply)
   }
 
 

@@ -7,7 +7,12 @@ import spray.json._
 /**
  * Created by aparrish on 7/29/14.
  */
-case class CadenceUser(id: Option[Int], email : String, firstName : String, lastName : String, company : String)
+case class CadenceUser(id: Option[Int],
+                       email : String,
+                       firstName : String,
+                       lastName : String,
+                       company : String,
+                       password : String)
 
 case class Metric( uuid : String, appid : String )
 
@@ -64,7 +69,7 @@ trait CadenceJsonProtocol extends DefaultJsonProtocol {
     }
   }
 
-  implicit val cadenceUser2json = jsonFormat5(CadenceUser)
+  implicit val cadenceUser2json = jsonFormat6(CadenceUser)
   implicit val checkin2json = jsonFormat3(Checkin)
   implicit val rawCheckin2json = jsonFormat1(RawCheckin)
   implicit val metric2json = jsonFormat2(Metric)
