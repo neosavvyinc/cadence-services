@@ -281,7 +281,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
       }
     }
 
-    val appRoutes = addApplicationToUser ~ findAllAppsForUser ~ activateDevice ~ findOneAppById
+    val appRoutes = addApplicationToUser ~ findOneAppById ~ findAllAppsForUser ~ activateDevice
 
   }
 
