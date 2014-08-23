@@ -14,6 +14,13 @@ case class CadenceUser(id: Option[Int],
                        company : String,
                        password : String)
 
+case class CadenceRegistrationRequest(email : String,
+                                      firstName : String,
+                                      lastName : String,
+                                      company : String,
+                                      password : String)
+
+
 case class Metric( uuid : String, appid : String )
 
 case class RawCheckin( uuid : String)
@@ -69,7 +76,9 @@ trait CadenceJsonProtocol extends DefaultJsonProtocol {
     }
   }
 
-  implicit val cadenceUser2json = jsonFormat6(CadenceUser)
+//  implicit val cadenceUser2json = jsonFormat6(CadenceUser)
+//  implicit val cadenceUserRegistrationRequest2json = jsonFormat5(CadenceRegistrationRequest)
+
   implicit val checkin2json = jsonFormat3(Checkin)
   implicit val rawCheckin2json = jsonFormat1(RawCheckin)
   implicit val metric2json = jsonFormat2(Metric)

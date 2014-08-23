@@ -17,8 +17,8 @@
 
 import akka.actor._
 import akka.io.IO
-import com.cadence.model.repository._
 import com.cadence.model._
+import com.cadence.model.repository._
 import org.joda.time.DateTime
 import org.omg.CosNaming.NamingContextPackage.NotFound
 import spray.can.Http
@@ -56,8 +56,14 @@ object UserProtocol extends DefaultJsonProtocol {
   implicit val dataFormat : JsonFormat[Data] = jsonFormat4(Data)
 }
 
-object RequestJsonProtocol extends DefaultJsonProtocol {
+object RequestJsonProtocol extends CadenceJsonProtocol {
   import UserProtocol._
+
+
+  implicit val cadenceUser2json = jsonFormat6(CadenceUser)
+  implicit val cadenceUserRegistrationRequest2json = jsonFormat5(CadenceRegistrationRequest)
+
+
 
   implicit object RequestJsonFormat extends RootJsonFormat[Request] {
     override def write(obj: Request): JsValue = obj match {
@@ -173,9 +179,12 @@ object SimpleServer extends App with MySslConfiguration {
 
     def businessLogicNoUpgrade: Receive = {
       implicit val refFactory: ActorRefFactory = context
-      runRoute( cadenceRoute )
+      runRoute( cadenceRoute ~ userRoutes )
     }
 
+    /** ****************
+      * Static Asset Endpoints
+      */
 
     def indexPath = pathEndOrSingleSlash {
       getFromResource("index.html")
@@ -192,6 +201,54 @@ object SimpleServer extends App with MySslConfiguration {
     def app = pathPrefix("app") {
       getFromResourceDirectory("app")
     }
+
+    /** *****************
+      * User Endpoints
+      */
+    val userEndpointPrefix = "users"
+
+    def helloFromUser = {
+      pathPrefix(userEndpointPrefix / "hello" ) {
+        get {
+          respondWithMediaType(`application/json`) {
+            complete("Hello World!")
+          }
+        }
+      }
+    }
+
+    def registerUser= {
+      implicit val cadenceUserRegistrationRequest2json = jsonFormat5(CadenceRegistrationRequest)
+
+      pathPrefix(userEndpointPrefix / "register") {
+        post {
+          entity(as[CadenceRegistrationRequest]) { registrationRequest =>
+            respondWithMediaType(`application/json`) {
+              complete {
+                addUser(
+                  CadenceUser(
+                    None,
+                    registrationRequest.email,
+                    registrationRequest.firstName,
+                    registrationRequest.lastName,
+                    registrationRequest.company,
+                    registrationRequest.password) )
+
+                StatusCodes.OK
+              }
+            }
+          }
+        }
+      }
+    }
+
+    val userRoutes = helloFromUser ~ registerUser
+
+
+    /** *******************
+      * App Endpoints
+      */
+
 
 
 //    def setup = pathPrefix("setup") {
@@ -214,66 +271,61 @@ object SimpleServer extends App with MySslConfiguration {
 //      }
 //    }
 
-    def showUsers = pathPrefix("listUsers") {
-      get {
-        respondWithMediaType(`application/json`)
-        complete {
-          listUsers()
-        }
+//    def showUsers = pathPrefix("listUsers") {
+//      get {
+//        respondWithMediaType(`application/json`)
+//        complete {
+//          listUsers()
+//        }
+//
+//      }
+//    }
+//
+//    def checkin = pathPrefix("checkin") {
+//      post {
+//        respondWithMediaType(`application/json`)
+//        entity(as[RawCheckin]) {
+//          checkin =>
+//            complete {
+//
+//              insertCheckin(Checkin(None, checkin.uuid))
+//
+//              import RequestJsonProtocol._
+//              val update : WsMetricsChange = WsMetricsChange()
+//              server ! ForwardFrame(TextFrame(update.asInstanceOf[Request].toJson.compactPrint))
+//
+//              StatusCodes.OK
+//            }
+//        }
+//      }
+//    }
+//
+//    def showMetrics = pathPrefix("metrics") {
+//      get {
+//        respondWithMediaType(`application/json`)
+//        complete {
+//
+//          listCheckins()
+//        }
+//
+//      }
+//    }
 
-      }
-    }
-
-    def checkin = pathPrefix("checkin") {
-      post {
-        respondWithMediaType(`application/json`)
-        entity(as[RawCheckin]) {
-          checkin =>
-            complete {
-
-              insertCheckin(Checkin(None, checkin.uuid))
-
-              import RequestJsonProtocol._
-              val update : WsMetricsChange = WsMetricsChange()
-              server ! ForwardFrame(TextFrame(update.asInstanceOf[Request].toJson.compactPrint))
-
-              StatusCodes.OK
-            }
-        }
-      }
-    }
-
-    def showMetrics = pathPrefix("metrics") {
-      get {
-        respondWithMediaType(`application/json`)
-        complete {
-
-          listCheckins()
-        }
-
-      }
-    }
-
-
-    def graphMetrics = pathPrefix("graphMetrics") {
-      get {
-        respondWithMediaType(`application/json`)
-        parameters('q) {
-          (q) =>
-            complete {
-              graphCheckins(q)
-            }
-        }
-      }
-    }
+//
+//    def graphMetrics = pathPrefix("graphMetrics") {
+//      get {
+//        respondWithMediaType(`application/json`)
+//        parameters('q) {
+//          (q) =>
+//            complete {
+//              graphCheckins(q)
+//            }
+//        }
+//      }
+//    }
 
 
     val cadenceRoute =
-//        setup ~
-        showUsers ~
-        checkin ~
-        showMetrics ~
-        graphMetrics ~
         lib ~
         app ~
         indexPath ~
