@@ -20,7 +20,7 @@ class RepositorySpec extends Specification {
     }
 
     "support inserting" in {
-      val c = CadenceUser(None, "aparrish@neosavvy.com", "anything")
+      val c = CadenceUser(None, "aparrish@neosavvy.com", "adam", "parrish", "neosavvy")
       val r = addUser(c)
 
       r must be equalTo 1

@@ -36,28 +36,27 @@ package object repository {
   val checkins = TableQuery[CheckinTable]
 
 
+  /**
+   * USERS
+   *
+   * +------------+---------------+------+-----+---------+----------------+
+   * | Field      | Type          | Null | Key | Default | Extra          |
+   * +------------+---------------+------+-----+---------+----------------+
+   * | ID         | int(11)       | NO   | PRI | NULL    | auto_increment |
+   * | FIRST_NAME | varchar(1024) | NO   |     | NULL    |                |
+   * | LAST_NAME  | varchar(1024) | NO   |     | NULL    |                |
+   * | EMAIL      | varchar(1024) | NO   |     | NULL    |                |
+   * +------------+---------------+------+-----+---------+----------------+
+   */
+  class CadenceUserTable(tag: Tag) extends Table[CadenceUser](tag, "USERS") {
 
-  class CadenceUserTable(tag: Tag) extends Table[CadenceUser](tag, "cadence_user") {
+    def id: Column[Int] = column[Int]("ID", O.PrimaryKey, O.AutoInc)
+    def firstName : Column[String] = column[String]("FIRST_NAME")
+    def lastName : Column[String] = column[String]("LAST_NAME")
+    def email: Column[String] = column[String]("EMAIL")
+    def company: Column[String] = column[String]("COMPANY")
 
-    def id: Column[Int] = column[Int]("id", O.PrimaryKey, O.AutoInc)
-    def email: Column[String] = column[String]("email")
-    def uuid: Column[String] = column[String]("uuid")
-
-    def * = (id.?, email, uuid) <> (CadenceUser.tupled, CadenceUser.unapply)
-
-  }
-
-  class CheckinTable(tag : Tag ) extends Table[Checkin](tag, "cadence_checkin") {
-
-    import com.github.tototoshi.slick.MySQLJodaSupport._
-
-    def id    = column[Int]("id", O.PrimaryKey, O.AutoInc)
-    def uuid  = column[String]("metric_user_uuid")
-    def date  = column[DateTime]("metric_date")
-
-    def * = (id.?, uuid, date) <> (Checkin.tupled, Checkin.unapply)
-
-
+    def * = (id.?, firstName, lastName, email, company) <> (CadenceUser.tupled, CadenceUser.unapply)
   }
 
   def dropAll() : Int = {
@@ -65,6 +64,7 @@ package object repository {
     db.withSession{
       implicit s => cadenceUsers.delete
     }
+
   }
 
   def addUser( user : CadenceUser ) : Int = {
@@ -82,6 +82,66 @@ package object repository {
       implicit s => cadenceUsers.list
     }
 
+  }
+
+  /**
+   * APP OWNERS
+   * +----------+------------+------+-----+---------+----------------+
+   * | Field    | Type       | Null | Key | Default | Extra          |
+   * +----------+------------+------+-----+---------+----------------+
+   * | ID       | int(11)    | NO   | PRI | NULL    | auto_increment |
+   * | OWNER_ID | bigint(20) | NO   |     | NULL    |                |
+   * | APP_ID   | bigint(20) | NO   |     | NULL    |                |
+   * +----------+------------+------+-----+---------+----------------+
+   */
+
+  /**
+   * APPS
+   * +---------+---------------+------+-----+---------+----------------+
+   * | Field   | Type          | Null | Key | Default | Extra          |
+   * +---------+---------------+------+-----+---------+----------------+
+   * | ID      | int(11)       | NO   | PRI | NULL    | auto_increment |
+   * | NAME    | varchar(1024) | NO   |     | NULL    |                |
+   * | MARKET  | varchar(1024) | YES  |     | NULL    |                |
+   * | URL     | varchar(4096) | YES  |     | NULL    |                |
+   * | API_KEY | varchar(1024) | NO   |     | NULL    |                |
+   * | TYPE    | varchar(256)  | NO   |     | NULL    |                |
+   * +---------+---------------+------+-----+---------+----------------+
+   */
+
+  /**
+   * SESSIONS
+   * +-----------------+------------+------+-----+---------------------+-----------------------------+
+   * | Field           | Type       | Null | Key | Default             | Extra                       |
+   * +-----------------+------------+------+-----+---------------------+-----------------------------+
+   * | SESSIONID       | char(36)   | NO   | PRI | NULL                |                             |
+   * | USERID          | bigint(20) | NO   |     | NULL                |                             |
+   * | CREATED         | timestamp  | NO   |     | CURRENT_TIMESTAMP   | on update CURRENT_TIMESTAMP |
+   * | LASTACCESSED    | timestamp  | NO   |     | 0000-00-00 00:00:00 |                             |
+   * | SESSION_INVALID | tinyint(1) | NO   |     | 1                   |                             |
+   * +-----------------+------------+------+-----+---------------------+-----------------------------+
+   */
+
+
+
+
+
+
+
+
+
+
+
+
+  class CheckinTable(tag : Tag ) extends Table[Checkin](tag, "cadence_checkin") {
+
+    import com.github.tototoshi.slick.MySQLJodaSupport._
+
+    def id    = column[Int]("id", O.PrimaryKey, O.AutoInc)
+    def uuid  = column[String]("metric_user_uuid")
+    def date  = column[DateTime]("metric_date")
+
+    def * = (id.?, uuid, date) <> (Checkin.tupled, Checkin.unapply)
   }
 
   def insertCheckin( checkin : Checkin ) : Int = {

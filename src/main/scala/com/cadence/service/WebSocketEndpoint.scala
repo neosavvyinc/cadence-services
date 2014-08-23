@@ -66,24 +66,24 @@ class WebSocketWorker(val serverConnection: ActorRef, val server : ActorRef) ext
     runRoute(cadenceRoute)
   }
 
-  def setup = pathPrefix("setup") {
-    post{
-      respondWithMediaType(`application/json`)
-      entity(as[String]) {
-        emailAddress =>
-          complete {
-            def uuid = java.util.UUID.randomUUID.toString
-            val u = CadenceUser(None, emailAddress, uuid)
-            addUser(u)
-
-            println("Trying to send a notification to the client to reload")
-            server ! FrameCommand(TextFrame("reloadUsers"))
-
-            u
-          }
-      }
-    }
-  }
+//  def setup = pathPrefix("setup") {
+//    post{
+//      respondWithMediaType(`application/json`)
+//      entity(as[String]) {
+//        emailAddress =>
+//          complete {
+//            def uuid = java.util.UUID.randomUUID.toString
+//            val u = CadenceUser(None, emailAddress, uuid)
+//            addUser(u)
+//
+//            println("Trying to send a notification to the client to reload")
+//            server ! FrameCommand(TextFrame("reloadUsers"))
+//
+//            u
+//          }
+//      }
+//    }
+//  }
 
   def showUsers = pathPrefix("listUsers") {
     get {
@@ -137,7 +137,7 @@ class WebSocketWorker(val serverConnection: ActorRef, val server : ActorRef) ext
 
 
   val cadenceRoute =
-    setup ~
+//    setup ~
       showUsers ~
       checkin ~
       showMetrics ~

@@ -194,25 +194,25 @@ object SimpleServer extends App with MySslConfiguration {
     }
 
 
-    def setup = pathPrefix("setup") {
-      post{
-        respondWithMediaType(`application/json`)
-        entity(as[String]) {
-          emailAddress =>
-            complete {
-              def uuid = java.util.UUID.randomUUID.toString
-              val u = CadenceUser(None, emailAddress, uuid)
-              addUser(u)
-
-              import RequestJsonProtocol._
-              val update : WsDataChange = WsDataChange()
-              server ! ForwardFrame(TextFrame(update.asInstanceOf[Request].toJson.compactPrint))
-
-              u
-            }
-        }
-      }
-    }
+//    def setup = pathPrefix("setup") {
+//      post{
+//        respondWithMediaType(`application/json`)
+//        entity(as[String]) {
+//          emailAddress =>
+//            complete {
+//              def uuid = java.util.UUID.randomUUID.toString
+//              val u = CadenceUser(None, emailAddress, uuid)
+//              addUser(u)
+//
+//              import RequestJsonProtocol._
+//              val update : WsDataChange = WsDataChange()
+//              server ! ForwardFrame(TextFrame(update.asInstanceOf[Request].toJson.compactPrint))
+//
+//              u
+//            }
+//        }
+//      }
+//    }
 
     def showUsers = pathPrefix("listUsers") {
       get {
@@ -269,7 +269,7 @@ object SimpleServer extends App with MySslConfiguration {
 
 
     val cadenceRoute =
-        setup ~
+//        setup ~
         showUsers ~
         checkin ~
         showMetrics ~
@@ -303,12 +303,8 @@ object SimpleServer extends App with MySslConfiguration {
 
     IO(UHttp) ! Http.Bind(server, "0.0.0.0", 8080)
 
-//    readLine("Hit ENTER to exit ...\n")
-//    system.shutdown()
-//    system.awaitTermination()
   }
 
-  // because otherwise we get an ambiguous implicit if doMain is inlined
   doMain()
 }
 

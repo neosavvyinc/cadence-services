@@ -75,4 +75,12 @@
 
     </changeSet>
 
+    <changeSet author="aparrish" id="2">
+        <addColumn tableName="USERS">
+            <column name="COMPANY" type="VARCHAR(256)">
+                <constraints nullable="false"></constraints>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
