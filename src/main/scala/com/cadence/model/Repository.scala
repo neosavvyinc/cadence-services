@@ -33,6 +33,12 @@ package object repository {
     password = DBConfiguration.pass)
 
   val cadenceUsers = TableQuery[CadenceUserTable]
+  object cadenceUsersExt extends TableQuery(new CadenceUserTable(_)) {
+    // put extra methods here, e.g.:
+    val findByID = this.findBy(_.id)
+  }
+
+
   val checkins = TableQuery[CheckinTable]
 
 
@@ -59,6 +65,7 @@ package object repository {
     def * = (id.?, firstName, lastName, email, company) <> (CadenceUser.tupled, CadenceUser.unapply)
   }
 
+
   def dropAll() : Int = {
 
     db.withSession{
@@ -70,8 +77,7 @@ package object repository {
   def addUser( user : CadenceUser ) : Int = {
 
     db.withSession{
-      implicit session =>
-        cadenceUsers.insert(user)
+      implicit session => (cadenceUsers returning cadenceUsers.map(_.id)) += user
     }
 
   }
@@ -82,6 +88,20 @@ package object repository {
       implicit s => cadenceUsers.list
     }
 
+  }
+
+  def updateUser( user : CadenceUser ) : Int = {
+
+    db.withSession {
+      implicit s => cadenceUsers.update(user)
+    }
+
+  }
+
+  def findById( id : Int ) : Option[CadenceUser] = {
+    db.withSession{
+      implicit s => cadenceUsersExt.findByID(id).firstOption()
+    }
   }
 
   /**
