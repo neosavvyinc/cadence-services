@@ -244,15 +244,12 @@ object SimpleServer extends App with MySslConfiguration with Logging {
           get {
             respondWithMediaType(`application/json`) {
               complete {
-
                 findApplicationsForOwner(userId)
-
               }
             }
-
           }
         }
-      }
+    }
 
     val appRoutes = addApplicationToUser ~ findAllAppsForUser
 
