@@ -104,7 +104,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
 
     def businessLogicNoUpgrade: Receive = {
       implicit val refFactory: ActorRefFactory = context
-      runRoute( userRoutes )
+      runRoute( userRoutes ~ appRoutes)
     }
 
     /** ****************
@@ -131,17 +131,6 @@ object SimpleServer extends App with MySslConfiguration with Logging {
       * User Endpoints
       */
     val userEndpointPrefix = "users"
-    val appsEndpointPrefix = "apps"
-
-    def helloFromUser = {
-      pathPrefix(userEndpointPrefix / "hello" ) {
-        get {
-          respondWithMediaType(`application/json`) {
-            complete("Hello World!")
-          }
-        }
-      }
-    }
 
     def registerUser = {
       implicit val cadenceUserRegistrationRequest2json = jsonFormat5(CadenceRegistrationRequest)
@@ -200,6 +189,14 @@ object SimpleServer extends App with MySslConfiguration with Logging {
 
     }
 
+    val userRoutes = registerUser ~ loginUser
+
+
+    /** *******************
+      * App Endpoints
+      */
+    val appsEndpointPrefix = "apps"
+
     def addApplicationToUser = {
       implicit val cadenceAddApplicationRequest2json = jsonFormat5(CadenceAddApplicationRequest)
 
@@ -230,13 +227,33 @@ object SimpleServer extends App with MySslConfiguration with Logging {
 
     }
 
-    val userRoutes = registerUser ~ loginUser ~ addApplicationToUser
+    def findAllAppsForUser = {
+      implicit val applications2json = jsonFormat6(Application)
 
+      implicit object ApplicationListTypeFormat extends JsonFormat[List[Application]] {
+        override def write(obj : List[Application]) : JsValue = JsArray(obj.map(applications2json.write))
 
-    /** *******************
-      * App Endpoints
-      */
+        override def read(json : JsValue) : List[Application] = json match {
+          case JsArray(x) => x.map(applications2json.read)
+          case _          => deserializationError("Expected String value for List[Application]")
+        }
+      }
 
+      pathPrefix(appsEndpointPrefix / IntNumber ) { userId =>
+        get {
+          respondWithMediaType(`application/json`) {
+            complete {
+
+              findApplicationsForOwner(userId)
+
+            }
+          }
+
+        }
+      }
+    }
+
+    val appRoutes = addApplicationToUser ~ findAllAppsForUser
 
   }
 
