@@ -131,6 +131,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
       * User Endpoints
       */
     val userEndpointPrefix = "users"
+    val appsEndpointPrefix = "apps"
 
     def helloFromUser = {
       pathPrefix(userEndpointPrefix / "hello" ) {
@@ -155,9 +156,9 @@ object SimpleServer extends App with MySslConfiguration with Logging {
                 addUser(
                   CadenceUser(
                     None,
-                    registrationRequest.email,
                     registrationRequest.firstName,
                     registrationRequest.lastName,
+                    registrationRequest.email,
                     registrationRequest.company,
                     registrationRequest.password) )
 
@@ -199,7 +200,37 @@ object SimpleServer extends App with MySslConfiguration with Logging {
 
     }
 
-    val userRoutes = helloFromUser ~ registerUser ~ loginUser
+    def addApplicationToUser = {
+      implicit val cadenceAddApplicationRequest2json = jsonFormat5(CadenceAddApplicationRequest)
+
+      pathPrefix(appsEndpointPrefix) {
+        post {
+          entity(as[CadenceAddApplicationRequest]) {
+            addRequest =>
+              respondWithMediaType(`application/json`) {
+                complete {
+
+                  val appId = addApplication(
+                    Application(
+                      None,
+                      addRequest.name,
+                      addRequest.market,
+                      addRequest.url,
+                      java.util.UUID.randomUUID().toString,
+                      addRequest.appType ))
+
+                  val appOwnerId = addApplicationOwner(ApplicationOwner(None, addRequest.ownerId, appId))
+
+                  StatusCodes.OK
+                }
+              }
+          }
+        }
+      }
+
+    }
+
+    val userRoutes = registerUser ~ loginUser ~ addApplicationToUser
 
 
     /** *******************

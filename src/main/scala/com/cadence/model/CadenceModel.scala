@@ -23,6 +23,14 @@ case class CadenceRegistrationRequest(email : String,
 
 case class CadenceLoginRequest( email : String, password : String )
 
+
+case class CadenceAddApplicationRequest(name : String ,
+                                        url : String,
+                                        appType : String,
+                                        market : String,
+                                        ownerId: Int)
+
+
 case class ApplicationOwner(id : Option[Int],
                             ownerId : Int,
                             applicationId : Int)
