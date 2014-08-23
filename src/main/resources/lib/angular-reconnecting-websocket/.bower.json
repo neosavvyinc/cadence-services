@@ -1,0 +1,28 @@
+{
+  "name": "angular-reconnecting-websocket",
+  "main": "angular-reconnecting-websocket.js",
+  "version": "0.1.1",
+  "homepage": "https://github.com/adieu/angular-reconnecting-websocket",
+  "authors": [
+    "adieu <adieu@adieu.me>"
+  ],
+  "description": "A reconnecting websocket for AngularJS.",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "0.1.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.1.1",
+    "commit": "fd1d548d072a5a06eb96398234ae0970ae98f8d1"
+  },
+  "_source": "git://github.com/adieu/angular-reconnecting-websocket.git",
+  "_target": "~0.1.1",
+  "_originalSource": "angular-reconnecting-websocket",
+  "_direct": true
+}

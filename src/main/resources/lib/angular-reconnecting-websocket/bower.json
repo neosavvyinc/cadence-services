@@ -1,0 +1,18 @@
+{
+  "name": "angular-reconnecting-websocket",
+  "main": "angular-reconnecting-websocket.js",
+  "version": "0.1.0",
+  "homepage": "https://github.com/adieu/angular-reconnecting-websocket",
+  "authors": [
+    "adieu <adieu@adieu.me>"
+  ],
+  "description": "A reconnecting websocket for AngularJS.",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

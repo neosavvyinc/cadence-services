@@ -1,0 +1,78 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1" author="aparrish">
+
+        <createTable tableName="USERS">
+            <column name="ID" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="FIRST_NAME" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LAST_NAME" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EMAIL" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="APP_OWNERS">
+            <column name="ID" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="OWNER_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="APP_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="APPS">
+            <column name="ID" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MARKET" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="URL" type="varchar(4096)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="API_KEY" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TYPE" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="SESSIONS">
+            <column name="SESSIONID" type="CHAR(36)" >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="USERID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LASTACCESSED" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SESSION_INVALID" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+</databaseChangeLog>

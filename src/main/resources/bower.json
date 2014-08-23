@@ -1,0 +1,25 @@
+{
+  "name": "cadence",
+  "version": "0.0.0",
+  "authors": [
+    "Adam Parrish <aparrish@neosavvy.com>"
+  ],
+  "componentsDirectory": "lib/",
+  "description": "Simple metric tracking",
+  "license": "MIT",
+  "homepage": "www.neosavvy.com",
+  "dependencies": {
+    "angular": "~1.2.21",
+    "socket.io": "~1.0.6",
+    "socket.io-client": "~1.0.6",
+    "angular-nvd3": "~0.0.9",
+    "lodash": "~2.4.1",
+    "momentjs": "~2.8.1",
+    "angular-ui-bootstrap-bower": "~0.11.0",
+    "bootstrap": "~3.2.0",
+    "reconnecting-websocket": "https://github.com/joewalnes/reconnecting-websocket.git"
+  },
+  "resolutions": {
+    "d3": "~3.4"
+  }
+}

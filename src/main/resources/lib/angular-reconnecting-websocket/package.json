@@ -1,0 +1,11 @@
+{
+  "name": "angular-reconnecting-websocket",
+  "version": "0.1.0",
+  "description": "A reconnecting websocket.",
+  "author": "Joe Walnes",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.2.2"
+  }
+}

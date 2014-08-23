@@ -1,0 +1,10 @@
+- name: Make sure mysql-python is installed
+  easy_install: name=mysql-python
+#  sudo: true
+
+- name: Set up mysql user cadence
+  mysql_user: name=cadence password=cadence priv=*.*:ALL state=present
+#  sudo: true
+
+- name: Set Up mysql cadence database
+  mysql_db: name=cadence state=present
