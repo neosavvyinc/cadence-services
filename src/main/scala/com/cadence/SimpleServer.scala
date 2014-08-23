@@ -104,7 +104,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
 
     def businessLogicNoUpgrade: Receive = {
       implicit val refFactory: ActorRefFactory = context
-      runRoute( userRoutes ~ appRoutes)
+      runRoute( userRoutes ~ appRoutes ~ metricRoutes)
     }
 
     /** ****************
@@ -285,7 +285,81 @@ object SimpleServer extends App with MySslConfiguration with Logging {
 
     val appRoutes = addApplicationToUser ~ findOneAppById ~ findAllAppsForUser ~ activateDevice
 
+    def checkinFromDevice = {
+      implicit val checkin2json = jsonFormat2(MetricRequest)
+
+      pathPrefix("metrics" / "checkin" ) {
+        post {
+          entity(as[MetricRequest]) {
+            metric => {
+              respondWithMediaType(`application/json`) {
+                complete{
+                  insertMetric(Metric(None, metric.appId, metric.deviceId))
+
+                  StatusCodes.OK
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+
+    def rawMetrics = {
+      implicit val metric2json = jsonFormat4(Metric)
+
+
+      implicit object MetricListTypeFormat extends JsonFormat[List[Metric]] {
+        override def write(obj : List[Metric]) : JsValue = JsArray(obj.map(metric2json.write))
+
+        override def read(json : JsValue) : List[Metric] = json match {
+          case JsArray(x) => x.map(metric2json.read)
+          case _          => deserializationError("Expected String value for List[Metric]")
+        }
+      }
+
+      pathPrefix("metrics" / "raw" / IntNumber) { appId =>
+        get {
+          respondWithMediaType(`application/json`) {
+            complete{
+              listMetrics()
+            }
+          }
+        }
+      }
+    }
+
+    def graphMetrics = {
+      implicit val graphMetric2json = jsonFormat2(GraphMetric)
+
+
+      implicit object GraphMetricListTypeFormat extends JsonFormat[List[GraphMetric]] {
+        override def write(obj : List[GraphMetric]) : JsValue = JsArray(obj.map(graphMetric2json.write))
+
+        override def read(json : JsValue) : List[GraphMetric] = json match {
+          case JsArray(x) => x.map(graphMetric2json.read)
+          case _          => deserializationError("Expected String value for List[Application]")
+        }
+      }
+
+      pathPrefix("metrics" / IntNumber ) { appId =>
+        get {
+          respondWithMediaType(`application/json`) {
+            complete{
+              graphCheckins("")
+            }
+          }
+        }
+      }
+    }
+
+    val metricRoutes = checkinFromDevice ~ rawMetrics ~ graphMetrics
+
   }
+
+
+
 
   def responseFrame(eventName: String, user: User): TextFrame = {
     import com.cadence.UserProtocol._

@@ -221,32 +221,35 @@ package object repository extends Logging {
    */
 
 
-//
-//
-//  class CheckinTable(tag : Tag ) extends Table[Checkin](tag, "cadence_checkin") {
-//
-//    import com.github.tototoshi.slick.MySQLJodaSupport._
-//
-//    def id    = column[Int]("id", O.PrimaryKey, O.AutoInc)
-//    def uuid  = column[String]("metric_user_uuid")
-//    def date  = column[DateTime]("metric_date")
-//
-//    def * = (id.?, uuid, date) <> (Checkin.tupled, Checkin.unapply)
-//  }
-//
-//  def insertCheckin( checkin : Checkin ) : Int = {
-//
-//    db.withSession {
-//      implicit session => checkins.insert( checkin )
-//    }
-//
-//  }
-//
-//  def listCheckins() : List[Checkin] = {
-//    db.withSession {
-//      implicit session => checkins.list
-//    }
-//  }
+
+
+  class MetricTable(tag : Tag ) extends Table[Metric](tag, "METRICS") {
+
+    import com.github.tototoshi.slick.MySQLJodaSupport._
+
+    def id    = column[Int]("ID", O.PrimaryKey, O.AutoInc)
+    def appId  = column[String]("API_KEY")
+    def deviceId  = column[String]("DEVICE_ID")
+    def date  = column[DateTime]("METRIC_DATE")
+
+    def * = (id.?, appId, deviceId, date) <> (Metric.tupled, Metric.unapply)
+  }
+  object metrics extends TableQuery(new MetricTable(_)) {
+  }
+
+  def insertMetric( metric : Metric ) : Int = {
+
+    db.withSession {
+      implicit session => (metrics returning metrics.map(_.id)) += metric
+    }
+
+  }
+
+  def listMetrics() : List[Metric] = {
+    db.withSession {
+      implicit session => metrics.list
+    }
+  }
 
   /**
    * Need to improve these queries to pad for empty results:
@@ -256,21 +259,17 @@ package object repository extends Logging {
    */
 
   implicit val getUserResult = GetResult(r => GraphMetric(r.<<, r.<<))
-  val groupingQueryByMinute = Q[Unit, GraphMetric] + """select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d %H:%i:00 %Z') as time from cadence_checkin group by time"""
-  val groupingQueryByHour = Q[Unit, GraphMetric] + """select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d %H:00:00 %Z') as time from cadence_checkin group by time"""
-  val groupingQueryByDay = Q[Unit, GraphMetric] + """select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d') as time from cadence_checkin group by time"""
-  val groupingQueryByMonth = Q[Unit, GraphMetric] + """select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m') as time from cadence_checkin group by time"""
+  val groupingQueryByMinute = Q[Unit, GraphMetric] + """select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d %H:%i:00 %Z') as time from METRICS group by time"""
+  val groupingQueryByHour = Q[Unit, GraphMetric] + """select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d %H:00:00 %Z') as time from METRICS group by time"""
+  val groupingQueryByDay = Q[Unit, GraphMetric] + """select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d') as time from METRICS group by time"""
+  val groupingQueryByMonth = Q[Unit, GraphMetric] + """select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m') as time from METRICS group by time"""
 
   def graphCheckins( groupingType : String ) : List[GraphMetric] = {
 
     groupingType match {
-      case "Minute" => db.withSession {
-        implicit session => {
-          groupingQueryByMinute().list
-        }
-      }
+
       case "Hour" => db.withSession {
-        implicit session => {
+          implicit session => {
           groupingQueryByHour().list
         }
       }
@@ -279,9 +278,14 @@ package object repository extends Logging {
           groupingQueryByDay().list
         }
       }
-      case "Month" | _ => db.withSession {
+      case "Month" => db.withSession {
         implicit session => {
           groupingQueryByMonth().list
+        }
+      }
+      case "Minute" | _ => db.withSession {
+        implicit session => {
+          groupingQueryByMinute().list
         }
       }
     }

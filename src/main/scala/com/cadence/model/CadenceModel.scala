@@ -43,11 +43,14 @@ case class Application(id : Option[Int],
                        appType : String)
 
 
-case class Metric( uuid : String, appid : String )
+//case class Metric( uuid : String, appid : String )
 
-case class RawCheckin( uuid : String)
+case class MetricRequest( appId : String, deviceId: String )
 
-case class Checkin( id : Option[Int], uuid : String, date : DateTime = DateTime.now())
+case class Metric(id : Option[Int],
+                   appId : String,
+                   deviceId : String,
+                   date : DateTime = DateTime.now())
 
 case class GraphMetric( count : Int, time : String )
 
@@ -101,10 +104,10 @@ trait CadenceJsonProtocol extends DefaultJsonProtocol {
 //  implicit val cadenceUser2json = jsonFormat6(CadenceUser)
 //  implicit val cadenceUserRegistrationRequest2json = jsonFormat5(CadenceRegistrationRequest)
 
-  implicit val checkin2json = jsonFormat3(Checkin)
-  implicit val rawCheckin2json = jsonFormat1(RawCheckin)
-  implicit val metric2json = jsonFormat2(Metric)
-  implicit val graphMetric2json = jsonFormat2(GraphMetric)
+//  implicit val checkin2json = jsonFormat3(Checkin)
+//  implicit val rawCheckin2json = jsonFormat1(RawCheckin)
+//  implicit val metric2json = jsonFormat2(Metric)
+//  implicit val graphMetric2json = jsonFormat2(GraphMetric)
 
 }
 

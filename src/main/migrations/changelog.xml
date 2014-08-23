@@ -91,4 +91,22 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="4" author="aparrish">
+        <createTable tableName="METRICS">
+            <column name="ID" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="API_KEY" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEVICE_ID" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="METRIC_DATE" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
