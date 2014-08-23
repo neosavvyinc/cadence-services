@@ -239,19 +239,20 @@ object SimpleServer extends App with MySslConfiguration with Logging {
         }
       }
 
-      pathPrefix(appsEndpointPrefix / IntNumber ) { userId =>
-        get {
-          respondWithMediaType(`application/json`) {
-            complete {
+      pathPrefix(appsEndpointPrefix)
+        parameters('userId.as[Int]) { userId  =>
+          get {
+            respondWithMediaType(`application/json`) {
+              complete {
 
-              findApplicationsForOwner(userId)
+                findApplicationsForOwner(userId)
 
+              }
             }
-          }
 
+          }
         }
       }
-    }
 
     val appRoutes = addApplicationToUser ~ findAllAppsForUser
 
