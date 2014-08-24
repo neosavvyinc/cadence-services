@@ -296,6 +296,10 @@ object SimpleServer extends App with MySslConfiguration with Logging {
                 complete{
                   insertMetric(Metric(None, metric.appId, metric.deviceId))
 
+                  import RequestJsonProtocol._
+                  val update : WsMetricsChange = WsMetricsChange()
+                  server ! ForwardFrame(TextFrame(update.asInstanceOf[Request].toJson.compactPrint))
+
                   StatusCodes.OK
                 }
               }
