@@ -335,15 +335,15 @@ object SimpleServer extends App with MySslConfiguration with Logging {
     }
 
     def graphMetrics = {
-      implicit val graphMetric2json = jsonFormat2(GraphMetric)
+      implicit val graphMetric2json = jsonFormat3(GraphMetricResult)
 
 
-      implicit object GraphMetricListTypeFormat extends JsonFormat[List[GraphMetric]] {
-        override def write(obj : List[GraphMetric]) : JsValue = JsArray(obj.map(graphMetric2json.write))
+      implicit object GraphMetricResultListTypeFormat extends JsonFormat[List[GraphMetricResult]] {
+        override def write(obj : List[GraphMetricResult]) : JsValue = JsArray(obj.map(graphMetric2json.write))
 
-        override def read(json : JsValue) : List[GraphMetric] = json match {
+        override def read(json : JsValue) : List[GraphMetricResult] = json match {
           case JsArray(x) => x.map(graphMetric2json.read)
-          case _          => deserializationError("Expected String value for List[Application]")
+          case _          => deserializationError("Expected String value for List[GraphMetricResult]")
         }
       }
 
@@ -351,7 +351,11 @@ object SimpleServer extends App with MySslConfiguration with Logging {
         get {
           respondWithMediaType(`application/json`) {
             complete{
-              graphCheckins("")
+              val graphMetrics = graphCheckins("")
+              val results : List[GraphMetricResult] = graphMetrics.map { gr => GraphMetricResult(
+                gr.count + gr.time, gr.count, gr.time
+              )}
+              results
             }
           }
         }
@@ -384,7 +388,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
     val listener = system.actorOf(Props(classOf[DeadLetterListener]))
     system.eventStream.subscribe(listener, classOf[DeadLetter])
 
-    IO(UHttp) ! Http.Bind(server, "0.0.0.0", 8080)
+    IO(UHttp) ! Http.Bind(server, "0.0.0.0", 7070)
 
   }
 
