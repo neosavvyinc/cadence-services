@@ -23,9 +23,9 @@ package object repository extends Logging {
     val numPartitions = 1
 
     val driver = "com.mysql.jdbc.Driver"
-    val url = "jdbc:mysql://localhost/cadence"
-    val user = "cadence"
-    val pass = "cadence"
+    val url = "jdbc:mysql://localhost/cadencev1"
+    val user = "cadencev1"
+    val pass = "cadencev1"
   }
 
   val db = Database.forURL( DBConfiguration.url,
