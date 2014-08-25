@@ -388,7 +388,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
     val listener = system.actorOf(Props(classOf[DeadLetterListener]))
     system.eventStream.subscribe(listener, classOf[DeadLetter])
 
-    IO(UHttp) ! Http.Bind(server, "0.0.0.0", 7070)
+    IO(UHttp) ! Http.Bind(server, "0.0.0.0", 8080)
 
   }
 
