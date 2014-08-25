@@ -52,6 +52,7 @@ case class Metric(id : Option[Int],
                    deviceId : String,
                    date : DateTime = DateTime.now())
 
+case class GraphMetricResult( identifier: String,  count : Int, time : String )
 case class GraphMetric( count : Int, time : String )
 
 object Dates {
