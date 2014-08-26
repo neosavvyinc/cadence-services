@@ -23,9 +23,9 @@ package object repository extends Logging {
     val numPartitions = 1
 
     val driver = "com.mysql.jdbc.Driver"
-    val url = "jdbc:mysql://localhost/cadence"
-    val user = "cadence"
-    val pass = "cadence"
+    val url = "jdbc:mysql://localhost/cadencev1"
+    val user = "cadencev1"
+    val pass = "cadencev1"
   }
 
   val db = Database.forURL( DBConfiguration.url,
@@ -258,36 +258,115 @@ package object repository extends Logging {
    * http://stackoverflow.com/questions/5988179/mysql-group-by-date-how-to-return-results-when-no-rows
    */
 
-  implicit val getUserResult = GetResult(r => GraphMetric(r.<<, r.<<))
-  val groupingQueryByMinute = Q[Unit, GraphMetric] + """select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d %H:%i:00 %Z') as time from METRICS group by time"""
-  val groupingQueryByHour = Q[Unit, GraphMetric] + """select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d %H:00:00 %Z') as time from METRICS group by time"""
-  val groupingQueryByDay = Q[Unit, GraphMetric] + """select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d') as time from METRICS group by time"""
-  val groupingQueryByMonth = Q[Unit, GraphMetric] + """select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m') as time from METRICS group by time"""
 
-  def graphCheckins( groupingType : String ) : List[GraphMetric] = {
+  def graphCheckins( groupingType : Option[String], appId : Int, timeFilter : Option[String]  ) : List[GraphMetric] = {
+
+    val timeFilterString = "'" + timeFilter.getOrElse("") + "'"
+
+    implicit val getUserResult = GetResult(r => GraphMetric(r.<<, r.<<))
+    val groupingQueryBySecond = Q[Unit, GraphMetric] + s"select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d %H:%i:%s %Z') as time from METRICS M JOIN APPS A where M.API_KEY = A.API_KEY and A.ID = $appId group by time"
+    val groupingQueryBySecondFiltered = Q[Unit, GraphMetric] + s"select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d %H:%i:%s %Z') as time from METRICS M JOIN APPS A where M.API_KEY = A.API_KEY and A.ID = $appId and metric_date > $timeFilterString group by time"
+
+    val groupingQueryByMinute = Q[Unit, GraphMetric] + s"select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d %H:%i:00 %Z') as time from METRICS M JOIN APPS A where M.API_KEY = A.API_KEY and A.ID = $appId group by time"
+    val groupingQueryByMinuteFiltered = Q[Unit, GraphMetric] + s"select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d %H:%i:00 %Z') as time from METRICS M JOIN APPS A where M.API_KEY = A.API_KEY and A.ID = $appId and metric_date > $timeFilterString group by time"
+
+    val groupingQueryByHour = Q[Unit, GraphMetric] + s"select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d %H:00:00 %Z') as time from METRICS M JOIN APPS A where M.API_KEY = A.API_KEY and A.ID = $appId group by time"
+    val groupingQueryByHourFiltered = Q[Unit, GraphMetric] + s"select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d %H:00:00 %Z') as time from METRICS M JOIN APPS A where M.API_KEY = A.API_KEY and A.ID = $appId and metric_date > $timeFilterString group by time"
+
+    val groupingQueryByDay = Q[Unit, GraphMetric] + s"select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d') as time from METRICS M JOIN APPS A where M.API_KEY = A.API_KEY and A.ID = $appId group by time"
+    val groupingQueryByDayFiltered = Q[Unit, GraphMetric] + s"select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d') as time from METRICS M JOIN APPS A where M.API_KEY = A.API_KEY and A.ID = $appId and metric_date > $timeFilterString group by time"
+
+    val groupingQueryByMonth = Q[Unit, GraphMetric] + s"select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m') as time from METRICS M JOIN APPS A where M.API_KEY = A.API_KEY and A.ID = $appId group by time"
+    val groupingQueryByMonthFiltered = Q[Unit, GraphMetric] + s"select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m') as time from METRICS M JOIN APPS A where M.API_KEY = A.API_KEY and A.ID = $appId and metric_date > $timeFilterString group by time"
+
 
     groupingType match {
 
-      case "Hour" => db.withSession {
-          implicit session => {
-          groupingQueryByHour().list
+      case Some("second") =>
+        timeFilter match {
+          case None => db.withSession {
+            implicit session => {
+              groupingQueryBySecond().list
+            }
+          }
+          case Some(x) => db.withSession {
+            implicit session => {
+              groupingQueryBySecondFiltered().list
+            }
+          }
         }
-      }
-      case "Day" => db.withSession {
-        implicit session => {
-          groupingQueryByDay().list
+      case Some("hour") =>
+            timeFilter match {
+              case None => db.withSession {
+                implicit session => {
+                  groupingQueryByHour().list
+                }
+              }
+              case Some(x) => db.withSession {
+                implicit session => {
+                  groupingQueryByHourFiltered().list
+                }
+              }
+            }
+
+      case Some("day") =>
+          timeFilter match {
+            case None => db.withSession {
+              implicit session => {
+                groupingQueryByDay().list
+              }
+            }
+            case Some(x) => db.withSession {
+              implicit session => {
+                groupingQueryByDayFiltered().list
+              }
+            }
+
+          }
+      case Some("month") =>
+        timeFilter match {
+          case None => db.withSession {
+            implicit session => {
+              groupingQueryByMonth().list
+            }
+          }
+          case Some(x) => db.withSession {
+            implicit session => {
+              groupingQueryByMonthFiltered().list
+            }
+          }
+
         }
+
+      case Some("minute") =>
+        timeFilter match {
+          case None => db.withSession {
+            implicit session => {
+              groupingQueryByMinute().list
+            }
+          }
+          case Some(x) => db.withSession {
+            implicit session => {
+              groupingQueryByMinuteFiltered().list
+            }
+          }
+
       }
-      case "Month" => db.withSession {
-        implicit session => {
-          groupingQueryByMonth().list
+
+      case None | _ =>
+        timeFilter match {
+          case None => db.withSession {
+            implicit session => {
+              groupingQueryBySecond().list
+            }
+          }
+          case Some(x) => db.withSession {
+            implicit session => {
+              groupingQueryBySecondFiltered().list
+            }
+          }
         }
-      }
-      case "Minute" | _ => db.withSession {
-        implicit session => {
-          groupingQueryByMinute().list
-        }
-      }
+
     }
 
   }

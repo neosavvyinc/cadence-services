@@ -134,6 +134,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
 
     def registerUser = {
       implicit val cadenceUserRegistrationRequest2json = jsonFormat5(CadenceRegistrationRequest)
+      implicit val basicResponse2json = jsonFormat1(BasicResponse)
 
       pathPrefix(userEndpointPrefix / "register") {
         post {
@@ -151,7 +152,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
                     registrationRequest.company,
                     registrationRequest.password) )
 
-                StatusCodes.OK
+                BasicResponse(StatusCodes.OK.toString())
               }
             }
           }
@@ -162,6 +163,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
     def loginUser = {
       implicit val cadenceLoginRequest2json = jsonFormat2(CadenceLoginRequest)
       implicit val cadenceUser2json = jsonFormat6(CadenceUser)
+      implicit val basicResponse2json = jsonFormat1(BasicResponse)
 
       pathPrefix(userEndpointPrefix / "login" ) {
         post {
@@ -170,14 +172,14 @@ object SimpleServer extends App with MySslConfiguration with Logging {
               complete {
                 val userByEmail = findByEmail(loginRequest.email)
                 userByEmail match {
-                  case None => StatusCodes.Forbidden
+                  case None => BasicResponse(StatusCodes.Forbidden.toString)
                   case Some(u) => {
                     if( u.password == loginRequest.password ) {
                       u
                     }
                     else
                     {
-                      StatusCodes.Forbidden
+                      BasicResponse(StatusCodes.Forbidden.toString)
                     }
                   }
                 }
@@ -272,12 +274,14 @@ object SimpleServer extends App with MySslConfiguration with Logging {
     }
 
     def activateDevice = {
+      implicit val deviceRegistration2json = jsonFormat1(DeviceRegistration)
+
       pathPrefix(appsEndpointPrefix / "activate" / JavaUUID ) { deviceId =>
         get {
           debug("Generating an activate id for device: " + deviceId)
 
           respondWithMediaType(`application/json`) {
-            complete( java.util.UUID.randomUUID().toString )
+            complete( DeviceRegistration(java.util.UUID.randomUUID().toString) )
           }
         }
       }
@@ -287,6 +291,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
 
     def checkinFromDevice = {
       implicit val checkin2json = jsonFormat2(MetricRequest)
+      implicit val basicResponse = jsonFormat1(BasicResponse)
 
       pathPrefix("metrics" / "checkin" ) {
         post {
@@ -300,7 +305,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
                   val update : WsMetricsChange = WsMetricsChange()
                   server ! ForwardFrame(TextFrame(update.asInstanceOf[Request].toJson.compactPrint))
 
-                  StatusCodes.OK
+                  BasicResponse(StatusCodes.OK.toString)
                 }
               }
             }
@@ -348,16 +353,19 @@ object SimpleServer extends App with MySslConfiguration with Logging {
       }
 
       pathPrefix("metrics" / IntNumber ) { appId =>
-        get {
-          respondWithMediaType(`application/json`) {
-            complete{
-              val graphMetrics = graphCheckins("")
-              val results : List[GraphMetricResult] = graphMetrics.map { gr => GraphMetricResult(
-                gr.count + gr.time, gr.count, gr.time
-              )}
-              results
+        parameters('timeFilter.?, 'groupFilter.?) { (timeFilter, groupFilter) =>{
+          get {
+            respondWithMediaType(`application/json`) {
+              complete{
+                val graphMetrics = graphCheckins(groupFilter, appId, timeFilter)
+                val results : List[GraphMetricResult] = graphMetrics.map { gr => GraphMetricResult(
+                  gr.count + gr.time, gr.count, gr.time
+                )}
+                results
+              }
             }
           }
+        }
         }
       }
     }
@@ -388,7 +396,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
     val listener = system.actorOf(Props(classOf[DeadLetterListener]))
     system.eventStream.subscribe(listener, classOf[DeadLetter])
 
-    IO(UHttp) ! Http.Bind(server, "0.0.0.0", 8080)
+    IO(UHttp) ! Http.Bind(server, "0.0.0.0", 7070)
 
   }
 
