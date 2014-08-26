@@ -3,8 +3,8 @@
 #  sudo: true
 
 - name: Set up mysql user cadence
-  mysql_user: name=cadence password=cadence priv=*.*:ALL state=present
+  mysql_user: name=cadencev1 password=cadencev1 priv=*.*:ALL state=present
 #  sudo: true
 
 - name: Set Up mysql cadence database
-  mysql_db: name=cadence state=present
+  mysql_db: name=cadencev1 state=present
