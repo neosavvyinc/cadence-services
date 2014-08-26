@@ -1,4 +1,7 @@
 x
+*.log
+*.swp
+*.swo
 .idea/
 .idea_modules/
 *.iml
