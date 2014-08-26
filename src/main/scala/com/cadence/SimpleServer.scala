@@ -353,16 +353,19 @@ object SimpleServer extends App with MySslConfiguration with Logging {
       }
 
       pathPrefix("metrics" / IntNumber ) { appId =>
-        get {
-          respondWithMediaType(`application/json`) {
-            complete{
-              val graphMetrics = graphCheckins("", appId)
-              val results : List[GraphMetricResult] = graphMetrics.map { gr => GraphMetricResult(
-                gr.count + gr.time, gr.count, gr.time
-              )}
-              results
+        parameters('timeFilter.?, 'groupFilter.?) { (timeFilter, groupFilter) =>{
+          get {
+            respondWithMediaType(`application/json`) {
+              complete{
+                val graphMetrics = graphCheckins(groupFilter, appId, timeFilter)
+                val results : List[GraphMetricResult] = graphMetrics.map { gr => GraphMetricResult(
+                  gr.count + gr.time, gr.count, gr.time
+                )}
+                results
+              }
             }
           }
+        }
         }
       }
     }
@@ -393,7 +396,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
     val listener = system.actorOf(Props(classOf[DeadLetterListener]))
     system.eventStream.subscribe(listener, classOf[DeadLetter])
 
-    IO(UHttp) ! Http.Bind(server, "0.0.0.0", 8080)
+    IO(UHttp) ! Http.Bind(server, "0.0.0.0", 7070)
 
   }
 
