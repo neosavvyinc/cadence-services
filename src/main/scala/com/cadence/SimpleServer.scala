@@ -134,6 +134,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
 
     def registerUser = {
       implicit val cadenceUserRegistrationRequest2json = jsonFormat5(CadenceRegistrationRequest)
+      implicit val basicResponse2json = jsonFormat1(BasicResponse)
 
       pathPrefix(userEndpointPrefix / "register") {
         post {
@@ -151,7 +152,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
                     registrationRequest.company,
                     registrationRequest.password) )
 
-                StatusCodes.OK
+                BasicResponse(StatusCodes.OK.toString())
               }
             }
           }
@@ -162,6 +163,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
     def loginUser = {
       implicit val cadenceLoginRequest2json = jsonFormat2(CadenceLoginRequest)
       implicit val cadenceUser2json = jsonFormat6(CadenceUser)
+      implicit val basicResponse2json = jsonFormat1(BasicResponse)
 
       pathPrefix(userEndpointPrefix / "login" ) {
         post {
@@ -170,14 +172,14 @@ object SimpleServer extends App with MySslConfiguration with Logging {
               complete {
                 val userByEmail = findByEmail(loginRequest.email)
                 userByEmail match {
-                  case None => StatusCodes.Forbidden
+                  case None => BasicResponse(StatusCodes.Forbidden.toString)
                   case Some(u) => {
                     if( u.password == loginRequest.password ) {
                       u
                     }
                     else
                     {
-                      StatusCodes.Forbidden
+                      BasicResponse(StatusCodes.Forbidden.toString)
                     }
                   }
                 }
@@ -289,6 +291,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
 
     def checkinFromDevice = {
       implicit val checkin2json = jsonFormat2(MetricRequest)
+      implicit val basicResponse = jsonFormat1(BasicResponse)
 
       pathPrefix("metrics" / "checkin" ) {
         post {
@@ -302,7 +305,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
                   val update : WsMetricsChange = WsMetricsChange()
                   server ! ForwardFrame(TextFrame(update.asInstanceOf[Request].toJson.compactPrint))
 
-                  StatusCodes.OK
+                  BasicResponse(StatusCodes.OK.toString)
                 }
               }
             }

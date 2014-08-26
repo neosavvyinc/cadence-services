@@ -44,6 +44,8 @@ case class Application(id : Option[Int],
 
 case class DeviceRegistration( uniqueIdentifier : String )
 
+case class BasicResponse( statusCode : String )
+
 
 //case class Metric( uuid : String, appid : String )
 
