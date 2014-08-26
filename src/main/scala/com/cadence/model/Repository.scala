@@ -258,19 +258,22 @@ package object repository extends Logging {
    * http://stackoverflow.com/questions/5988179/mysql-group-by-date-how-to-return-results-when-no-rows
    */
 
-  implicit val getUserResult = GetResult(r => GraphMetric(r.<<, r.<<))
-  val groupingQueryByMinute = Q[Unit, GraphMetric] + """select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d %H:%i:00 %Z') as time from METRICS group by time"""
-  val groupingQueryByHour = Q[Unit, GraphMetric] + """select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d %H:00:00 %Z') as time from METRICS group by time"""
-  val groupingQueryByDay = Q[Unit, GraphMetric] + """select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d') as time from METRICS group by time"""
-  val groupingQueryByMonth = Q[Unit, GraphMetric] + """select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m') as time from METRICS group by time"""
 
-  def graphCheckins( groupingType : String ) : List[GraphMetric] = {
+  def graphCheckins( groupingType : String, appId : Int ) : List[GraphMetric] = {
+
+    implicit val getUserResult = GetResult(r => GraphMetric(r.<<, r.<<))
+    val groupingQueryBySecond = Q[Unit, GraphMetric] + s"select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d %H:%i:%s %Z') as time from METRICS M JOIN APPS A where M.API_KEY = A.API_KEY and A.ID = $appId group by time"
+    val groupingQueryByMinute = Q[Unit, GraphMetric] + s"select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d %H:%i:00 %Z') as time from METRICS M JOIN APPS A where M.API_KEY = A.API_KEY and A.ID = $appId group by time"
+    val groupingQueryByHour = Q[Unit, GraphMetric] + s"select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d %H:00:00 %Z') as time from METRICS M JOIN APPS A where M.API_KEY = A.API_KEY and A.ID = $appId group by time"
+    val groupingQueryByDay = Q[Unit, GraphMetric] + s"select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m-%d') as time from METRICS M JOIN APPS A where M.API_KEY = A.API_KEY and A.ID = $appId group by time"
+    val groupingQueryByMonth = Q[Unit, GraphMetric] + s"select count(*) as count, DATE_FORMAT(metric_date, '%Y-%m') as time from METRICS M JOIN APPS A where M.API_KEY = A.API_KEY and A.ID = $appId group by time"
+
 
     groupingType match {
 
       case "Hour" => db.withSession {
           implicit session => {
-          groupingQueryByHour().list
+          groupingQueryByHour(appId).list
         }
       }
       case "Day" => db.withSession {

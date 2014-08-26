@@ -356,7 +356,7 @@ object SimpleServer extends App with MySslConfiguration with Logging {
         get {
           respondWithMediaType(`application/json`) {
             complete{
-              val graphMetrics = graphCheckins("")
+              val graphMetrics = graphCheckins("", appId)
               val results : List[GraphMetricResult] = graphMetrics.map { gr => GraphMetricResult(
                 gr.count + gr.time, gr.count, gr.time
               )}
