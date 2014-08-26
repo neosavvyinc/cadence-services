@@ -272,12 +272,14 @@ object SimpleServer extends App with MySslConfiguration with Logging {
     }
 
     def activateDevice = {
+      implicit val deviceRegistration2json = jsonFormat1(DeviceRegistration)
+
       pathPrefix(appsEndpointPrefix / "activate" / JavaUUID ) { deviceId =>
         get {
           debug("Generating an activate id for device: " + deviceId)
 
           respondWithMediaType(`application/json`) {
-            complete( java.util.UUID.randomUUID().toString )
+            complete( DeviceRegistration(java.util.UUID.randomUUID().toString) )
           }
         }
       }

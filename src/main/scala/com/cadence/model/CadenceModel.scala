@@ -42,6 +42,8 @@ case class Application(id : Option[Int],
                        apiKey : String,
                        appType : String)
 
+case class DeviceRegistration( uniqueIdentifier : String )
+
 
 //case class Metric( uuid : String, appid : String )
 
